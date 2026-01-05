@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String?
+  createdAt DateTime  @default(now())
+  auth0Id   String? @unique
+  provider  String  @default("local")
+
+  projects  Project[]
+  notes     Note[]
+}
+
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  userId      Int
+  createdAt   DateTime  @default(now()) 
+  isArchived  Boolean   @default(false)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@index([userId])
+}
+
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  projectId   Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  isArchived  Boolean    @default(false)
+
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+
+
+model Note {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now())
+  isArchived Boolean   @default(false)
+
+  @@index([userId])
+}
+
+
+enum TaskStatus {
+  TODO
+  PENDING
+  IN_PROGRESS
+  SKIP
+  COMPLETED
+}
