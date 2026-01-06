@@ -1,59 +1,21 @@
-import { Router } from "express";
-import passport from "../auth/auth0.strategy";
-import { auth0Callback } from "../controllers/auth0.controller";
+import passport from "passport";
+import {  oauthLoginSuccess } from "../controllers/auth0.controller";
+import express from "express";
 
-const auth0Router = Router();
-
-// Start Google login
-// auth0Router.get(
-//   "/auth0/login",
-//   passport.authenticate(
-//     "auth0",
-//     {
-//       scope: "openid profile email",
-//       connection: "google-oauth2",
-//       prompt: "select_account",
-//       state: "login", // 👈 identify flow
-//     } as any
-//   )
-// );
-
-// auth0Router.get(
-//   "/auth0/register",
-//   passport.authenticate(
-//     "auth0",
-//     {
-//       scope: "openid profile email",
-//       connection: "google-oauth2",
-//       prompt: "select_account",
-//       state: "register", // 👈 identify flow
-//     } as any
-//   )
-// );
+const auth0Router = express.Router();
 
 auth0Router.get(
-  "/auth0",
-  passport.authenticate(
-    "auth0",
-    {
-      scope: "openid profile email",
-      connection: "google-oauth2",
-      prompt: "select_account",
-    } as any // 👈 FIX
-  )
-);
-
-// // Auth0 callback
-auth0Router.get(
-  "/auth0/callback",
-  passport.authenticate("auth0", { session: false }),
-  auth0Callback
-);
-
-// auth0Router.get(
-//   "/auth0/callback",
-//   passport.authenticate("auth0"),
-//   auth0Callback // 👈 YOU decide login vs register here
-// );
+    "/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
+  
+  auth0Router.get(
+    "/google/callback",
+    passport.authenticate("google", {
+      session: false,
+      failureRedirect: "http://localhost:3000/login?error=no_user",
+    }),
+    oauthLoginSuccess
+  );
 
 export default auth0Router;
