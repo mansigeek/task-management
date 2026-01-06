@@ -8,25 +8,15 @@ import { verifyToken } from "./src/middlewares/middleware";
 import projectRouter from "./src/routes/project.route";
 import taskRouter from "./src/routes/task.route";
 import noteRouter from "./src/routes/note.route";
-// import session from "express-session";
 import passport from "passport";
 import "./src/lib/passport";
 import auth0Router from "./src/routes/auth0.route";
 
 const app = express();
 
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET as string,
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
-
 app.use(passport.initialize());
 dotenv.config();
 
-// CORS configuration to allow credentials (cookies)
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:3000",
   credentials: true,

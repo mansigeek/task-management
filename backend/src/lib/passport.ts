@@ -1,6 +1,5 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import prisma from "../lib/prisma";
 
 passport.use(
   new GoogleStrategy(
@@ -10,18 +9,7 @@ passport.use(
       callbackURL: "http://localhost:2000/auth/google/callback",
     },
     async (_, __, profile, done) => {
-      const user = await prisma.user.findFirst({
-        where: {
-          provider: "google",
-          auth0Id: profile.id,
-        },
-      });
-
-      if (!user) {
-        return done(null, false);
-      }
-
-      return done(null, user);
+      done(null, profile);
     }
   )
 );
