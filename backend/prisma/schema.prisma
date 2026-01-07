@@ -14,6 +14,10 @@ model User {
   createdAt DateTime  @default(now())
   auth0Id   String? @unique
   provider  String  @default("local")
+  isActive  Boolean @default(false)
+  emailToken        String?
+  emailTokenExpiry  DateTime?
+  emailVerifiedAt   DateTime? 
 
   projects  Project[]
   notes     Note[]
